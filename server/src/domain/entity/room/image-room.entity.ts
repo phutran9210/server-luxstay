@@ -16,6 +16,6 @@ export class ImgRoom {
   imgUrl: string;
 
   @ManyToOne(() => Room, (room) => room.images)
-  @JoinColumn({ name: 'id' })
+  @JoinColumn({ name: 'room_id' })
   room: Room;
 }

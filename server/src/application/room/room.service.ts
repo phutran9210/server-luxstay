@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { CreateRoomDto } from './dto/create-room.dto';
+import { RoomDto } from './dto/create-room.dto';
 import { UpdateRoomDto } from './dto/update-room.dto';
 import { Repository } from 'typeorm';
 import { Room } from '../../domain/entity/room/room.entity';
@@ -15,11 +15,20 @@ export class RoomService {
     private imgRoomRepository: Repository<ImgRoom>,
     private cloudinaryService: CloudinaryService,
   ) {}
-  async create(createRoomDto: any, files: Express.Multer.File[]) {
+  async create(createRoomDto: RoomDto, files: Express.Multer.File[]) {
     const uploadResults =
       await this.cloudinaryService.uploadMultipleImages(files);
+    const imgRoomEntities = uploadResults.map((url) =>
+      this.imgRoomRepository.create({ imgUrl: url }),
+    );
 
-    return uploadResults;
+    const newRoom = this.roomRepository.create({
+      ...createRoomDto,
+      images: imgRoomEntities,
+    });
+    const addedRoom = await this.roomRepository.save(newRoom);
+
+    return addedRoom;
   }
 
   findAll() {

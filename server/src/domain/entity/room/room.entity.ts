@@ -45,12 +45,12 @@ export class Room {
 
   // thông tin địa chỉ
   @Column({ type: 'varchar', length: 255, nullable: false })
-  cityLocation: boolean;
+  cityLocation: string;
 
   @Column({ type: 'varchar', length: 255, nullable: false })
-  address: boolean;
+  address: string;
 
   //relation
-  @OneToMany(() => ImgRoom, (image) => image.room)
+  @OneToMany(() => ImgRoom, (image) => image.room, { cascade: true })
   images: ImgRoom[];
 }

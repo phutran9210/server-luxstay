@@ -44,13 +44,4 @@ export class CloudinaryService {
       throw new InternalServerErrorException('Err upload Cloudinary');
     }
   }
-
-  private async uploadImage(file: Express.Multer.File): Promise<any> {
-    try {
-      const result = await cloudinary.uploader.upload(file.path);
-      return result;
-    } catch (error) {
-      throw new InternalServerErrorException('Err upload Cloudinary');
-    }
-  }
 }

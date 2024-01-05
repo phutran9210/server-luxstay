@@ -7,12 +7,15 @@ import {
   Param,
   Delete,
   UseInterceptors,
-  UploadedFile,
   UploadedFiles,
   BadRequestException,
   HttpException,
   HttpStatus,
   NotAcceptableException,
+  Query,
+  ParseIntPipe,
+  NotFoundException,
+  InternalServerErrorException,
 } from '@nestjs/common';
 import { RoomService } from './room.service';
 import { RoomDto } from './dto/create-room.dto';
@@ -24,6 +27,7 @@ import {
   MultipartBody,
   ValidationUtil,
 } from '../../domain/service/room-domain/room-domain.service';
+import { RoomQueryDto } from './dto/room-query.dto';
 
 @Controller('api/v1/rooms')
 export class RoomController {
@@ -84,13 +88,26 @@ export class RoomController {
   }
 
   @Get()
-  findAll() {
-    return this.roomService.findAll();
+  async findAll(@Query() query: RoomQueryDto) {
+    try {
+      const results = await this.roomService.findAll(query);
+      // return new HttpException(results, HttpStatus.OK);
+    } catch (error) {
+      throw new BadRequestException('Unknown server error.');
+    }
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.roomService.findOne(+id);
+  async findOne(@Param('id', ParseIntPipe) id: number) {
+    try {
+      const result = await this.roomService.findOne(id);
+      return new HttpException(result, HttpStatus.OK);
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw new NotFoundException(`${id} not found.`);
+      }
+      throw new InternalServerErrorException();
+    }
   }
 
   @Patch(':id')

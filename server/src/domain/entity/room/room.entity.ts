@@ -1,5 +1,6 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { ImgRoom } from './image-room.entity';
+import { Booking } from '../booking/booking.entity';
 
 @Entity('rooms')
 export class Room {
@@ -53,4 +54,7 @@ export class Room {
   //relation
   @OneToMany(() => ImgRoom, (image) => image.room, { cascade: true })
   images: ImgRoom[];
+
+  @OneToMany(() => Booking, (booking) => booking.room)
+  bookings: Booking[];
 }
